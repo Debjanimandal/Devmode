@@ -63,14 +63,6 @@ devmode/
 
 ---
 
-## File Structure
-
-- **index.html:** Main HTML file containing the landing page, authentication modal, course list, community chat, and FAQ section.  
-- **auth.js:** Handles authentication modal display, tab switching, and sign-up/sign-in logic (using `localStorage`).  
-- **main.js:** Manages core functionality, including Dev Mode toggle, course selection, custom dropdown, and scroll animations.  
-- **interactive.js:** Controls community chat (show/hide channels) and FAQ answer toggling.  
-- **styles.css (assumed):** Contains styles for layout, animations, and responsive design (not provided but referenced implicitly).  
-
 ## Future Improvements
 
 - Replace `localStorage` with a backend API for secure authentication.
