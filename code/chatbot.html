@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Q&A Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0e1a;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .chat-section {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .chat-section h2 {
+            color: #ffffff;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        .chat-container {
+            border: 1px solid #8b8585;
+            padding: 20px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #8b8585;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .chat-messages p {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+        }
+        .chat-messages .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .chat-messages .bot-message {
+            background-color: rgba(0, 5, 8, 0.8);
+            color: #fff;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+            margin-right: auto;
+        }
+        .chat-messages .error-message {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #fff;
+            margin-right: auto;
+        }
+        .chat-input-container {
+            display: flex;
+            padding: 10px;
+        }
+        .chat-input-container textarea {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.7);
+            resize: none;
+            height: 60px;
+        }
+        .chat-input-container textarea:focus {
+            outline: none;
+            border-color: #3A8AFF;
+            box-shadow: 0 0 5px rgba(58, 138, 255, 0.5);
+        }
+        .chat-input-container button {
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .chat-input-container button:hover {
+            background-color: #0056b3;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-section" id="chatSection">
+        <h2>Course Q&A Assistant</h2>
+        <button class="back-button" onclick="history.back()">Back</button>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <p class="bot-message">Welcome to the Course Q&A Assistant! I’m here to help you explore courses.type 'help' for suggestions
+                </p>
+            </div>
+            <div class="chat-input-container">
+                <textarea id="chatInput" placeholder="Type your question or code..." onkeypress="handleKeyPress(event)" aria-label="Chat input"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Predefined course-related Q&A responses
+        const courseResponses = {
+            'css': 'CSS (Cascading Style Sheets) is used to style web pages, controlling layout, colors, and fonts. Example: `p { color: blue; }` sets paragraph text to blue. Want to know about a specific CSS property?',
+            'html': 'HTML (HyperText Markup Language) structures content on the web. Example: `<div>Hello</div>` creates a container. Need help with a specific HTML tag?',
+            'javascript': 'JavaScript adds interactivity to web pages. Example: `console.log("Hello");` prints to the console. Ask about a specific JavaScript feature!',
+            'python': 'Python is a versatile programming language used in our Programming course. Example: `print("Hello")` outputs text. Want to learn about a Python concept?',
+            'java': 'Java is a robust, object-oriented language taught in our Programming course. Example: `System.out.println("Hello");` prints text. Need help with Java syntax?',
+            'ui/ux': 'UI/UX Designing focuses on user interfaces and experiences. UI is about visual design; UX is about usability. Want details on tools like Figma?',
+            'web designing': 'Our Web Designing course covers HTML, CSS, and JavaScript for building responsive websites. It’s $99 for 8 weeks. Ask about a topic or type "enroll now" to join!',
+            'programming': 'Our Programming course teaches Python, Java, and C++. It’s $120 for 10 weeks. Want to explore a specific language?',
+            'ui/ux designing': 'The UI/UX Designing course covers user-centered design and prototyping. It’s $110 for 9 weeks. Interested in specific tools or techniques?'
+        };
+
+        // Follow-up details for "yes" and "next" responses
+        const followUpDetails = {
+            'css': [
+                'CSS also supports responsive design with media queries, e.g., `@media (max-width: 600px) { body { font-size: 14px; } }`. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Advanced CSS techniques include Flexbox for layouts and CSS Grid for complex grids. Type "next" for more information or "stop" to stop here/switch domain.',
+                'CSS preprocessors like Sass or Less can enhance productivity with variables and nesting. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'html': [
+                'HTML5 introduces semantic tags like `<header>`, `<footer>`, and `<article>` for better structure. Type "next" for more information or "stop" to stop here/switch domain.',
+                'It supports multimedia with `<audio>` and `<video>` tags, reducing reliance on plugins. Type "next" for more information or "stop" to stop here/switch domain.',
+                'HTML forms can be enhanced with attributes like `required` and `pattern` for validation. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'javascript': [
+                'JavaScript uses event listeners, e.g., `document.addEventListener("click", function() { ... });`, for interactivity. Type "next" for more information or "stop" to stop here/switch domain.',
+                'It supports modern features like async/await for handling asynchronous operations. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Frameworks like React and Node.js extend JavaScript for front-end and back-end development. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'python': [
+                'Python supports object-oriented programming with classes, e.g., `class Dog: def bark(self): print("Woof")`. Type "next" for more information or "stop" to stop here/switch domain.',
+                'It has powerful libraries like NumPy for numerical computing and Pandas for data analysis. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Python’s simplicity makes it ideal for beginners and advanced AI projects alike. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'java': [
+                'Java uses inheritance with `extends`, e.g., `class Child extends Parent { ... }`, for code reuse. Type "next" for more information or "stop" to stop here/switch domain.',
+                'It supports multithreading with the `Thread` class for concurrent execution. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Java’s JVM ensures platform independence across operating systems. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'ui/ux': [
+                'UI/UX tools include Adobe XD for prototyping and Sketch for vector design. Type "next" for more information or "stop" to stop here/switch domain.',
+                'User testing is key in UX, often using tools like UsabilityHub. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Trends include microinteractions to enhance user engagement. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'web designing': [
+                'Web Designing includes learning SEO basics to improve site visibility. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Responsive design is taught using Bootstrap or Tailwind CSS frameworks. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Projects may involve building a portfolio site as a capstone. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'programming': [
+                'Programming covers algorithms like sorting and searching for efficiency. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Version control with Git is taught to manage code changes. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Students work on real-world projects like a calculator or game. Type "next" for more information or "stop" to stop here/switch domain.'
+            ],
+            'ui/ux designing': [
+                'UI/UX Designing includes wireframing with tools like Figma or InVision. Type "next" for more information or "stop" to stop here/switch domain.',
+                'A/B testing is used to optimize user interfaces. Type "next" for more information or "stop" to stop here/switch domain.',
+                'Career paths include UX researcher or UI designer roles. Type "next" for more information or "stop" to stop here/switch domain.'
+            ]
+        };
+
+        // Future insights for topics
+        const futureInsights = {
+            'css': 'The future of CSS includes advanced features like Grid Layout 2, Container Queries, and improved animations with Houdini, driving modern web design trends.',
+            'html': 'HTML is evolving with Web Components and better accessibility standards, ensuring its relevance in future web development.',
+            'javascript': 'JavaScript’s future includes WebAssembly integration, enhanced performance with ECMAScript updates, and dominance in full-stack development.',
+            'python': 'Python’s future is bright with growth in AI, machine learning, and data science, making it a top choice for future tech careers.',
+            'java': 'Java will continue to thrive in enterprise applications, cloud computing, and Android development, with updates like Java 21 enhancing its longevity.',
+            'ui/ux': 'UI/UX is set to grow with AI-driven design tools, AR/VR integration, and a focus on inclusive, user-centric experiences in the coming years.',
+            'web designing': 'Web Designing is trending toward AI-assisted layouts, progressive web apps (PWAs), and cross-platform compatibility in the future.',
+            'programming': 'Programming’s future lies in automation, quantum computing, and interdisciplinary skills, with demand for versatile developers increasing.',
+            'ui/ux designing': 'UI/UX Designing will see advancements in voice interfaces, personalized UX, and ethical design practices as technology evolves.'
+        };
+
+        // Course roadmaps
+        const courseRoadmaps = {
+            'web designing': `
+- **Week 1-2:** Introduction to HTML - Learn basic tags and structure.
+- **Week 3-4:** Mastering CSS - Explore layouts and styling techniques.
+- **Week 5-6:** JavaScript Basics - Add interactivity to websites.
+- **Week 7-8:** Final Project - Build a responsive portfolio site with feedback.
+`,
+            'programming': `
+- **Week 1-3:** Python Fundamentals - Variables, loops, and functions.
+- **Week 4-6:** Java Basics - Object-oriented programming concepts.
+- **Week 7-9:** C++ Introduction - Pointers and memory management.
+- **Week 10:** Capstone Project - Develop a calculator or game.
+`,
+            'ui/ux designing': `
+- **Week 1-3:** Design Principles - Understand UI/UX basics and wireframing.
+- **Week 4-6:** Tool Mastery - Use Figma and Adobe XD for prototyping.
+- **Week 7-9:** User Testing - Conduct A/B tests and gather feedback.
+- **Week 10:** Final Project - Create a user-centered app design.
+`
+        };
+
+        // Chatbot state management
+        let chatState = {
+            stage: 'qa', // Possible stages: qa, enrollmentGreeting, courseSelection, userDetails, confirmation, done
+            userData: {
+                course: null,
+                name: null,
+                email: null
+            },
+            lastQuestion: null,
+            followUpIndex: 0, // Track follow-up details index
+            isFollowUpActive: false // Track if follow-up mode is active
+        };
+
+        const courses = ['Web Designing', 'Programming', 'UI/UX Designing'];
+
+        // Sanitize user input to prevent XSS
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // Display bot message
+        function displayBotMessage(message) {
+            const botMessage = document.createElement('p');
+            botMessage.classList.add('bot-message');
+            botMessage.textContent = message;
+            document.getElementById('chatMessages').appendChild(botMessage);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        // Display user message
+        function displayUserMessage(message) {
+            const userMessage = document.createElement('p');
+            userMessage.textContent = 'You: ' + message;
+            userMessage.classList.add('user-message');
+            document.getElementById('chatMessages').appendChild(userMessage);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        // Display error message
+        function displayErrorMessage(message) {
+            const errorMessage = document.createElement('p');
+            errorMessage.classList.add('error-message');
+            errorMessage.textContent = message;
+            document.getElementById('chatMessages').appendChild(errorMessage);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        // Normalize input for matching
+        function normalizeInput(input) {
+            return input.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+        }
+
+        // Extract keywords from interest description
+        function extractKeywords(text) {
+            const keywords = {
+                'design': ['design', 'ui', 'ux', 'art', 'creative', 'visual'],
+                'programming': ['code', 'coding', 'program', 'develop', 'algorithm', 'script'],
+                'web': ['web', 'website', 'html', 'css', 'javascript', 'site']
+            };
+            const normalizedText = normalizeInput(text);
+            for (let category in keywords) {
+                for (let keyword of keywords[category]) {
+                    if (normalizedText.includes(keyword)) {
+                        return category;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Process user input
+        function processMessage(message) {
+            message = sanitizeInput(message.trim());
+            if (!message) {
+                displayErrorMessage('Please type a question or code snippet.');
+                return;
+            }
+
+            displayUserMessage(message);
+            const normalizedMessage = normalizeInput(message);
+            const hasFuture = normalizedMessage.includes('future');
+            const isYes = normalizedMessage === 'yes';
+            const isNext = normalizedMessage === 'next';
+            const isStop = normalizedMessage === 'stop';
+
+            setTimeout(() => {
+                // Handle enrollment process
+                if (chatState.stage !== 'qa') {
+                    switch (chatState.stage) {
+                        case 'enrollmentGreeting':
+                            if (normalizedMessage === 'yes') {
+                                chatState.stage = 'courseSelection';
+                                displayBotMessage(`Please choose a course: ${courses.join(', ')}. Type the course name or a number (1 for ${courses[0]}, 2 for ${courses[1]}, 3 for ${courses[2]}).`);
+                            } else if (normalizedMessage === 'no') {
+                                chatState.stage = 'qa';
+                                displayBotMessage('No problem! Ask a question about our courses or type "enroll now" to start enrollment.');
+                            } else {
+                                displayErrorMessage('Please type "yes" or "no" to continue.');
+                            }
+                            break;
+                        case 'courseSelection':
+                            const courseIndex = parseInt(message) - 1;
+                            const selectedCourse = courses[courseIndex] || courses.find(c => normalizeInput(c) === normalizedMessage);
+                            if (selectedCourse) {
+                                chatState.userData.course = selectedCourse;
+                                chatState.stage = 'userDetails';
+                                displayBotMessage(`Awesome, you've chosen ${selectedCourse}! Please provide your full name.`);
+                            } else {
+                                displayErrorMessage(`Invalid course. Please choose from: ${courses.join(', ')} (or use 1, 2, 3).`);
+                            }
+                            break;
+                        case 'userDetails':
+                            if (!chatState.userData.name) {
+                                if (message.length < 2) {
+                                    displayErrorMessage('Please provide a valid full name.');
+                                } else {
+                                    chatState.userData.name = message;
+                                    displayBotMessage('Thanks! Now, please provide your email address.');
+                                }
+                            } else if (!chatState.userData.email) {
+                                if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(message)) {
+                                    chatState.userData.email = message;
+                                    chatState.stage = 'confirmation';
+                                    displayBotMessage(`Got it! Please confirm your enrollment details:\nCourse: ${chatState.userData.course}\nName: ${chatState.userData.name}\nEmail: ${chatState.userData.email}\nType "confirm" to proceed, "restart" to start over, or "back" to return to Q&A.`);
+                                } else {
+                                    displayErrorMessage('Please enter a valid email address (e.g., user@example.com).');
+                                }
+                            }
+                            break;
+                        case 'confirmation':
+                            if (normalizedMessage === 'confirm') {
+                                chatState.stage = 'done';
+                                displayBotMessage('Enrollment confirmed! You’ll receive a confirmation email soon. Type "ask" to return to Q&A or "enroll now" to start another enrollment.');
+                                // To integrate with a backend, send chatState.userData to an API endpoint here
+                                // Example: fetch('http://localhost:3000/enroll', { method: 'POST', body: JSON.stringify(chatState.userData) });
+                            } else if (normalizedMessage === 'restart') {
+                                chatState = { stage: 'enrollmentGreeting', userData: { course: null, name: null, email: null }, lastQuestion: chatState.lastQuestion, followUpIndex: 0, isFollowUpActive: false };
+                                displayBotMessage('Let’s start over. Would you like to enroll in a course? (Type "yes" or "no")');
+                            } else if (normalizedMessage === 'back') {
+                                chatState.stage = 'qa';
+                                chatState.userData = { course: null, name: null, email: null };
+                                displayBotMessage('Back to Q&A. What’s your question? Type "help" for suggestions.');
+                            } else {
+                                displayErrorMessage('Please type "confirm" to proceed, "restart" to start over, or "back" to return to Q&A.');
+                            }
+                            break;
+                        case 'done':
+                            if (normalizedMessage === 'ask') {
+                                chatState.stage = 'qa';
+                                chatState.userData = { course: null, name: null, email: null };
+                                displayBotMessage('What’s your question? Type "help" for suggestions.');
+                            } else if (normalizedMessage === 'enroll now') {
+                                chatState = { stage: 'enrollmentGreeting', userData: { course: null, name: null, email: null }, lastQuestion: chatState.lastQuestion, followUpIndex: 0, isFollowUpActive: false };
+                                displayBotMessage('Would you like to start the enrollment process? (Type "yes" or "no")');
+                            } else {
+                                displayErrorMessage('Type "ask" to return to Q&A or "enroll now" to start another enrollment.');
+                            }
+                            break;
+                    }
+                    return;
+                }
+
+                // Handle Q&A, follow-up mode, and interest-based course suggestion
+                if (normalizedMessage === 'enroll now') {
+                    chatState.stage = 'enrollmentGreeting';
+                    displayBotMessage('Would you like to start the enrollment process? (Type "yes" or "no")');
+                } else if (normalizedMessage === 'help') {
+                    displayBotMessage('You can ask about course topics like "CSS", "HTML", "JavaScript", "Python", "Java", "UI/UX", or general info like "Web Designing", "Programming", or "enroll". Describe your interests (e.g., "I love creating websites") for a course suggestion. Include "future" (e.g., "future of CSS") for future insights or "yes" to start detailed info (then "next" for more or "stop" to stop here/switch domain). What’s your question?');
+                } else if (isYes && chatState.lastQuestion) {
+                    chatState.isFollowUpActive = true;
+                    chatState.followUpIndex = 0;
+                    let followUp = followUpDetails[chatState.lastQuestion][chatState.followUpIndex];
+                    displayBotMessage(followUp);
+                } else if (isNext && chatState.isFollowUpActive && chatState.lastQuestion) {
+                    chatState.followUpIndex = (chatState.followUpIndex + 1) % followUpDetails[chatState.lastQuestion].length;
+                    let followUp = followUpDetails[chatState.lastQuestion][chatState.followUpIndex];
+                    displayBotMessage(followUp);
+                } else if (isStop && chatState.isFollowUpActive) {
+                    chatState.isFollowUpActive = false;
+                    chatState.followUpIndex = 0;
+                    displayBotMessage('Follow-up stopped. Ask a new question or type "help" for suggestions.');
+                } else {
+                    const matchedKey = Object.keys(courseResponses).find(key => normalizedMessage.includes(key));
+                    if (matchedKey) {
+                        chatState.lastQuestion = matchedKey;
+                        chatState.followUpIndex = 0;
+                        chatState.isFollowUpActive = false;
+                        let baseResponse = courseResponses[matchedKey];
+                        let futureResponse = futureInsights[matchedKey] || 'No specific future insights available for this topic yet.';
+                        if (hasFuture) {
+                            displayBotMessage(`${baseResponse}\nFuture Insight: ${futureResponse}`);
+                        } else {
+                            displayBotMessage(baseResponse);
+                        }
+                    } else {
+                        const interestCategory = extractKeywords(message);
+                        if (interestCategory) {
+                            let suggestedCourse = {
+                                'design': 'UI/UX Designing',
+                                'programming': 'Programming',
+                                'web': 'Web Designing'
+                            }[interestCategory];
+                            let roadmap = courseRoadmaps[suggestedCourse.toLowerCase().replace(/ /g, '')];
+                            displayBotMessage(`Based on your interest, I suggest the ${suggestedCourse} course. Here's a roadmap to guide you:\n${roadmap}Type "enroll now" to start or ask more questions!`);
+                        } else {
+                            displayErrorMessage('I’m not sure I understood that. Try asking about "CSS", "HTML", "JavaScript", "Python", "UI/UX", describing your interests, or type "help" for suggestions.');
+                        }
+                    }
+                }
+            }, 500); // Simulate response delay
+        }
+
+        // Send message handler
+        function sendMessage() {
+            processMessage(document.getElementById('chatInput').value);
+            document.getElementById('chatInput').value = '';
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>

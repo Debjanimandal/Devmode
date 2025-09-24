@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #b3b1b1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: relative;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .navbar.active {
+            opacity: 1;
+        }
+        .navbar-placeholder {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #0a0e1a;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        .navbar-placeholder.hidden {
+            opacity: 0;
+        }
+        .cosmic-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .pulse-orb {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #3A8AFF 0%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(58, 138, 255, 0.8);
+            animation: orbPulse 2s ease-in-out infinite;
+        }
+        @keyframes orbPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        .energy-wave {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 3px solid rgba(58, 138, 255, 0.5);
+            border-radius: 50%;
+            animation: waveExpand 4s ease-out infinite;
+        }
+        .energy-wave:nth-child(2) { animation-delay: 1.3s; }
+        .energy-wave:nth-child(3) { animation-delay: 2.6s; }
+        @keyframes waveExpand {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(5); opacity: 0; }
+        }
+        .spark-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3A8AFF;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(58, 138, 255, 1);
+            animation: sparkBurst 3s ease-in-out infinite;
+        }
+        .spark-particle:nth-child(4) { left: 30%; top: 20%; animation-delay: 0s; }
+        .spark-particle:nth-child(5) { left: 70%; top: 80%; animation-delay: 0.6s; }
+        .spark-particle:nth-child(6) { left: 20%; top: 60%; animation-delay: 1.2s; }
+        .spark-particle:nth-child(7) { left: 80%; top: 30%; animation-delay: 1.8s; }
+        @keyframes sparkBurst {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            50% { transform: translate(20px, -20px) scale(1.3); opacity: 1; }
+        }
+        .logo {
+            width: 90px;
+            height: 40px;
+            background-color: #ffffff;
+            border-radius: 10%;
+            display: flex;
+            
+        }
+        
+        .navbar-center {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+        .browse-dropdown {
+            position: relative;
+            margin-left: 20px;
+        }
+        .browse-dropdown select {
+            padding: 8px 4px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .search-bar {
+            width: 680px;
+            padding-left: 50px;
+            padding-right: 15px;
+            position: relative;
+        }
+        .search-bar input {
+            width: 650px;
+            padding: 8px 8px 8px 30px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .search-bar input[list="courses"]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+        .search-bar::before {
+            content: '🔍';
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #666;
+        }
+        /* Custom dropdown styles */
+        .custom-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 50px;
+            width: 650px;
+            background-color: white;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .custom-dropdown.active {
+            display: block;
+        }
+        .custom-dropdown div {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+        .custom-dropdown div:hover {
+            background-color: #f0f0f0;
+        }
+        .pricing-dropdown {
+            position: relative;
+            margin-left: 40px;
+        }
+        .pricing-dropdown select {
+            padding: 8px 4px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links a, .nav-links button {
+            margin-left: 20px;
+            margin-right: 20px;
+            text-decoration: none;
+            color: #333;
+            width: auto;
+        }
+        .nav-links .signup-btn, .nav-links .signin-btn {
+            padding: 8px 16px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .nav-links .signup-btn {
+            color: #006AFF;
+        }
+        .nav-links .signup-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #003AFF;
+        }
+        .nav-links .signin-btn {
+            color: #3A8AFF;
+        }
+        .nav-links .signin-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #006AFF;
+        }
+        /* Modal styles for sign-in/sign-up form */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-content .close:hover {
+            color: #000;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            color: #3A8AFF;
+            border-bottom: 2px solid #3A8AFF;
+        }
+        .form-content {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-content.active {
+            display: flex;
+        }
+        .form-content label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .form-content input {
+            padding: 10px;
+            border: 1px solid #8b8585;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: "Poppins", sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-content input:focus {
+            outline: none;
+            border-color: #3A8AFF;
+            box-shadow: 0 0 5px rgba(58, 138, 255, 0.5);
+        }
+        .form-content button {
+            padding: 10px;
+            background-color: #3A8AFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-content button:hover {
+            background-color: #006AFF;
+        }
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1000;
+            background-color: transparent;
+            border-radius: 10px;
+            transition: background-color 0.5s ease;
+        }
+        .main-content.dev-mode-on {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .text-content {
+            max-width: 50%;
+        }
+        .text-content h1 {
+            color: #ffffff;
+            font-size: 48px;
+            margin-top: 80px;
+            transition: color 0.5s ease;
+        }
+        .text-content.dev-mode-on h1 {
+            color: #000000;
+        }
+        .text-content p {
+            font-size: 18px;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+        .paragraph-wrapper {
+            height: 70px;
+        }
+        .text-content.dev-mode-on .paragraph-wrapper {
+            height: 80px;
+        }
+        .text-content.dev-mode-on #potentialText {
+            margin-top: 10px;
+        }
+        #startJourneyText {
+            display: none;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .toggle-switch input {
+            display: none;
+        }
+        .toggle-switch label {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .toggle-switch label::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: black;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: 0.3s;
+        }
+        .toggle-switch input:checked + label {
+            background-color: #006AFF;
+        }
+        .toggle-switch input:checked + label::after {
+            left: 21px;
+            background-color: white;
+        }
+        .toggle-switch span {
+            margin-left: 10px;
+            font-size: 16px;
+            color: white;
+            transition: color 0.5s ease;
+        }
+        .toggle-switch.dev-mode-on span {
+            color: black;
+        }
+        .dev-mode-animation {
+            flex: 1;
+            position: relative;
+            height: 350px;
+            width: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        .sad-animation {
+            position: absolute;
+            width: 120px;
+            height: 50px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        .sad-signal {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #006AFF;
+            box-shadow: 0 0 10px rgba(58, 138, 255, 0.8);
+            animation: softGlow 3s infinite ease-in-out, glitchMove 2s infinite ease-in-out, flicker 1s infinite ease-in-out;
+        }
+        .sad-signal:nth-child(1) { left: 0; animation-delay: 0s, 0s, 0s; }
+        .sad-signal:nth-child(2) { left: 25px; animation-delay: 0s, 0.2s, 0.3s; }
+        .sad-signal:nth-child(3) { left: 50px; animation-delay: 0s, 0.4s, 0.1s; }
+        .sad-signal:nth-child(4) { left: 75px; animation-delay: 0s, 0.6s, 0.4s; }
+        .sad-signal:nth-child(5) { left: 100px; animation-delay: 0s, 0.8s, 0.2s; }
+        .sad-sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3A8AFF;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(58, 138, 255, 0.5);
+            animation: sadSparkle 3s infinite ease-in-out;
+        }
+        .sad-sparkle:nth-child(6) { top: 10px; left: 20px; animation-delay: 0s; }
+        .sad-sparkle:nth-child(7) { top: 30px; left: 60px; animation-delay: 1s; }
+        .sad-sparkle:nth-child(8) { top: 20px; left: 100px; animation-delay: 2s; }
+        .dev-mode-animation.active .sad-animation,
+        .dev-mode-animation.active .sad-text {
+            opacity: 0;
+            display: none;
+        }
+        @keyframes glitchMove {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(3px, -2px); }
+            40% { transform: translate(-2px, 3px); }
+            60% { transform: translate(1px, -3px); }
+            80% { transform: translate(-3px, 2px); }
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @keyframes sadSparkle {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+        .code-fragments {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            display: none;
+        }
+        .dev-mode-animation.active .code-fragments {
+            opacity: 1;
+            display: block;
+        }
+        .code-fragment {
+            position: absolute;
+            padding: 15px;
+            background: rgba(0, 5, 8, 0.8);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #fff;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 15px rgba(58, 138, 255, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+        }
+        .dev-mode-animation.active .code-fragment:nth-child(1) {
+            animation: spawnFromToggle 1.5s ease-out forwards, floatPath1 7s infinite ease-in-out 1.5s, softGlow 3s infinite ease-in-out 1.5s;
+        }
+        .dev-mode-animation.active .code-fragment:nth-child(2) {
+            animation: spawnFromToggle 1.5s ease-out forwards, floatPath2 6s infinite ease-in-out 1.5s, softGlow 3s infinite ease-in-out 1.5s;
+        }
+        .dev-mode-animation.active .code-fragment:nth-child(3) {
+            animation: spawnFromToggle 1.5s ease-out forwards, floatPath3 5s infinite ease-in-out 1.5s, softGlow 3s infinite ease-in-out 1.5s;
+        }
+        .dev-mode-animation.active .code-fragment:nth-child(4) {
+            animation: spawnFromToggle 1.5s ease-out forwards, floatPath4 8s infinite ease-in-out 1.5s, softGlow 3s infinite ease-in-out 1.5s;
+        }
+        .code-fragment:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s, 1.5s, 1.5s; }
+        .code-fragment:nth-child(2) { top: 30%; left: 60%; animation-delay: 0.2s, 1.7s, 1.7s; }
+        .code-fragment:nth-child(3) { top: 50%; left: 25%; animation-delay: 0.4s, 1.9s, 1.9s; }
+        .code-fragment:nth-child(4) { top: 70%; left: 70%; animation-delay: 0.6s, 2.1s, 2.1s; }
+        @keyframes spawnFromToggle {
+            0% {
+                transform: translate(-540px, 150px) scale(0.3);
+                opacity: 1;
+                background: #3A8AFF;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                padding: 0;
+                color: transparent;
+                text-shadow: none;
+                box-shadow: 0 0 20px rgba(58, 138, 255, 0.8);
+            }
+            50% {
+                transform: translate(0, 50px) scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+                background: rgba(0, 5, 8, 0.8);
+                border-radius: 8px;
+                width: auto;
+                height: auto;
+                padding: 15px;
+                color: #fff;
+                text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(58, 138, 255, 0.5);
+            }
+        }
+        @keyframes floatPath1 {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            30% { transform: translateY(-15px) translateX(10px) rotate(5deg); }
+            60% { transform: translateY(5px) translateX(-5px) rotate(-3deg); }
+        }
+        @keyframes floatPath2 {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            40% { transform: translateY(10px) translateX(-15px) rotate(-2deg); }
+            70% { transform: translateY(-5px) translateX(20px) rotate(4deg); }
+        }
+        @keyframes floatPath3 {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            20% { transform: translateY(-20px) translateX(5px) rotate(1deg); }
+            50% { transform: translateY(15px) translateX(-10px) rotate(-5deg); }
+            80% { transform: translateY(-5px) translateX(5px) rotate(2deg); }
+        }
+        @keyframes floatPath4 {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(5px) translateX(20px) rotate(-1deg); }
+            55% { transform: translateY(-10px) translateX(-5px) rotate(3deg); }
+            85% { transform: translateY(5px) translateX(15px) rotate(-2deg); }
+        }
+        @keyframes softGlow {
+            0%, 100% { box-shadow: 0 1px 1px rgba(255, 250, 250, 0.2), 0 0 6px #006AFF; }
+            50% { box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 0 6px #006AFF; }
+        }
+        .code-fragment:hover {
+            transform: scale(1.1) translateZ(20px);
+            box-shadow: 0 0 1px #3A8AFF;
+        }
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3A8AFF;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(75, 0, 130, 1);
+            animation: sparkleMove 2.5s infinite ease-in-out;
+        }
+        .sparkle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 35%; left: 65%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { top: 55%; left: 30%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { top: 75%; left: 75%; animation-delay: 1.5s; }
+        @keyframes sparkleMove {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        .burst-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #3A8AFF;
+            border-radius: 50%;
+            opacity: 1;
+            animation: riseDot 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes riseDot {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(var(--dx), var(--dy)) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(0.5);
+                opacity: 0;
+            }
+        }
+        .scroll-to-learn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            color: #3A8AFF;
+            text-shadow: 0 0 4px rgba(58, 138, 255, 0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .scroll-to-learn.active {
+            opacity: 1;
+        }
+        .scroll-to-learn::after {
+            content: '↓';
+            margin-left: 8px;
+            font-size: 18px;
+            animation: bounceArrow 1.5s ease-in-out infinite;
+        }
+        @keyframes bounceArrow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        .header {
+            font-family: "Poppins", sans-serif;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            margin-top: 90px;
+        }
+        .header.highlighted {
+            color: #ffffff;
+        }
+        .header .highlight {
+            color: #9AC4FF;
+        }
+        .categories {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .category-btn {
+            font-family: "Poppins", sans-serif;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #006EFF;
+            border-radius: 20px;
+            background-color: transparent;
+            color: #000000;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .category-btn.featured {
+            background-color: #006EFF;
+            color: white;
+        }
+        .category-btn:hover {
+            background-color: #006EFF;
+            color: white;
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .course-card {
+            background-color: black;
+            border-radius: 10px;
+            overflow: hidden;
+            color: white;
+            text-align: left;
+        }
+        .course-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .course-info {
+            padding: 15px;
+        }
+        .course-info p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .course-info .title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .course-info .instructor {
+            color: #ccc;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            margin-bottom: 80px;
+        }
+        .channels-section, .chat-section {
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        .channels-section {
+            background-color: #9AC4FF;
+            border: 1px solid #868282;
+        }
+        .chat-section {
+            background-color: #607695;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #868282;
+            display: none;
+        }
+        .chat-section.active {
+            display: flex;
+        }
+        .channels-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .channel {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #9AC4FF;
+            border-radius: 5px;
+            border: 1px solid #000000;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .channel:hover {
+            background-color: #adadad86;
+        }
+        .channel img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: #607695;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .chat-header .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .chat-header .icons {
+            display: flex;
+            align-items: center;
+        }
+        .chat-header .icons svg {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            cursor: pointer;
+            stroke: #000000;
+            transition: stroke 0.3s;
+        }
+        .chat-header .icons svg:hover {
+            stroke: #f4f5f7;
+        }
+        .chat-header .user-info svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            cursor: pointer;
+            stroke: #000000;
+            transition: stroke 0.3s;
+        }
+        .chat-header .user-info svg:hover {
+            stroke: #f4f5f7;
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #e6e9ef;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 1px solid #b0b7c3;
+        }
+        .chat-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            background: none;
+        }
+        .chat-input svg {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            cursor: pointer;
+            stroke: #000000;
+            transition: stroke 0.3s;
+        }
+        .chat-input svg:hover {
+            stroke: #007bff;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .channels-section, .chat-section {
+                width: 100%;
+            }
+            .header {
+                font-size: 1.8em;
+            }
+            .channels-section h2 {
+                font-size: 1.2em;
+            }
+            .chat-header img {
+                width: 35px;
+                height: 35px;
+            }
+            .chat-header .icons svg, .chat-input svg, .chat-header .user-info svg {
+                width: 20px;
+                height: 20px;
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+        }
+        @media (max-width: 480px) {
+            .header {
+                font-size: 1.5em;
+            }
+            .channels-section, .chat-section {
+                padding: 15px;
+            }
+            .channel img {
+                width: 35px;
+                height: 35px;
+            }
+            .chat-header img {
+                width: 30px;
+                height: 30px;
+            }
+            .chat-input input {
+                font-size: 0.9em;
+            }
+            .chat-header .icons svg, .chat-input svg, .chat-header .user-info svg {
+                width: 18px;
+                height: 18px;
+                margin-left: 6px;
+                margin-right: 6px;
+            }
+        }
+        .background {
+            font-family: "Poppins", sans-serif;
+            background-color: #2A3B50;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px 2% 0;
+        }
+        .container.testimonials-container {
+            width: 80%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 40px 0;
+            margin: 0 auto;
+        }
+        .testimonials {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .testimonial-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            width: 30%;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .testimonial-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .role-label {
+            background-color: #e0e0e0;
+            color: #000000;
+            font-size: 0.85em;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        .testimonial-card::before {
+            content: '“';
+            font-size: 60px;
+            color: #4da8da;
+            position: absolute;
+            top: 80px;
+            left: 20px;
+        }
+        .testimonial-card p {
+            font-size: 1em;
+            line-height: 1.6;
+            margin: 50px 0 20px 0;
+            color: #000000;
+        }
+        .client-details {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .client-details::before {
+            content: '';
+            width: 3px;
+            height: 40px;
+            background-color: #4da8da;
+            margin-right: 10px;
+        }
+        .client-details h3 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #4da8da;
+        }
+        .client-details p {
+            font-size: 0.85em;
+            color: #000000;
+            margin: 0;
+        }
+        .container1 {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 150px;
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+        .faq {
+            margin-bottom: 60px;
+        }
+        .faq-item {
+            margin-bottom: 10px;
+        }
+        .question {
+            background-color: #fff;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .answer {
+            display: none;
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
+            text-align: left;
+            font-size: 16px;
+        }
+        .social-media h2 {
+            margin-top: 150px;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .icons a {
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 20px;
+            transition: background-color 0.3s;
+        }
+        .icons .facebook {
+            background-color: #1877F2;
+        }
+        .icons .facebook:hover {
+            background-color: #3b8af5;
+        }
+        .icons .instagram {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+        }
+        .icons .instagram:hover {
+            background: radial-gradient(circle at 30% 107%, #fef9b0 0%, #fef9b0 5%, #fe6e61 45%, #e03db5 60%, #4a7bf0 90%);
+        }
+        .icons .youtube {
+            background-color: #FF0000;
+        }
+        .icons .youtube:hover {
+            background-color: #ff3333;
+        }
+        .icons .pinterest {
+            background-color: #E60023;
+        }
+        .icons .pinterest:hover {
+            background-color: #f0193b;
+        }
+        .icons .linkedin {
+            background-color: #0A66C2;
+        }
+        .icons .linkedin:hover {
+            background-color: #2e87d8;
+        }
+        footer {
+            background-color: #000F23;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            margin-bottom: 20px;
+        }
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .footer-column a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .footer-column a:hover {
+            color: #fff;
+        }
+        .copyright {
+            font-size: 12px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar-placeholder" id="navbarPlaceholder">
+        <div class="cosmic-pulse">
+            <div class="pulse-orb"></div>
+            <div class="energy-wave"></div>
+            <div class="energy-wave"></div>
+            <div class="energy-wave"></div>
+            <div class="spark-particle"></div>
+            <div class="spark-particle"></div>
+            <div class="spark-particle"></div>
+            <div class="spark-particle"></div>
+        </div>
+    </div>
+    <div class="navbar" id="navbar">
+        <div class="logo"><img src="./image/logo.svg" alt="your logo" width="90px" height="40px"></div>
+        <div class="navbar-center">
+            <div class="browse-dropdown">
+                <select>
+                    <option>Browse</option>
+                </select>
+            </div>
+            <div id="search_icon" class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search for skills, subjects" list="courses">
+                <datalist id="courses">
+                    <option value="Featured">
+                    <option value="Music">
+                    <option value="Drawing & Painting">
+                    <option value="Animation">
+                    <option value="Creative Writing">
+                    <option value="Marketing">
+                    <option value="UI/UX Design">
+                    <option value="Social Media">
+                    <option value="Productivity">
+                    <option value="Graphics Design">
+                    <option value="Freelancing & Entrepreneurship">
+                    <option value="Programming">
+                </datalist>
+                <!-- Custom dropdown as a fallback -->
+                <div id="customDropdown" class="custom-dropdown">
+                    <div onclick="selectCourse('Featured')">Featured</div>
+                    <div onclick="selectCourse('Music')">Music</div>
+                    <div onclick="selectCourse('Drawing & Painting')">Drawing & Painting</div>
+                    <div onclick="selectCourse('Animation')">Animation</div>
+                    <div onclick="selectCourse('Creative Writing')">Creative Writing</div>
+                    <div onclick="selectCourse('Marketing')">Marketing</div>
+                    <div onclick="selectCourse('UI/UX Design')">UI/UX Design</div>
+                    <div onclick="selectCourse('Social Media')">Social Media</div>
+                    <div onclick="selectCourse('Productivity')">Productivity</div>
+                    <div onclick="selectCourse('Graphics Design')">Graphics Design</div>
+                    <div onclick="selectCourse('Freelancing & Entrepreneurship')">Freelancing & Entrepreneurship</div>
+                    <div onclick="selectCourse('Programming')">Programming</div>
+                </div>
+            </div>
+            <div class="pricing-dropdown">
+                <select>
+                    <option>Pricing</option>
+                </select>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="signin-btn" onclick="showModal('signin')">Sign in</button>
+            <button class="signup-btn" onclick="showModal('signup')">Sign up</button>
+        </div>
+    </div>
+
+    <!-- Sign-in/Sign-up Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal()">×</span>
+            <div class="tabs">
+                <div class="tab active" id="signup-tab" onclick="switchTab('signup')">Sign Up</div>
+                <div class="tab" id="signin-tab" onclick="switchTab('signin')">Sign In</div>
+            </div>
+            <div id="signup-form" class="form-content active">
+                <div>
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" placeholder="Enter your username" required>
+                </div>
+                <div>
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div>
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Enter your password" required>
+                </div>
+                <div>
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                </div>
+                <button onclick="handleSignup()">Sign Up</button>
+            </div>
+            <div id="signin-form" class="form-content">
+                <div>
+                    <label for="signin-email">Email</label>
+                    <input type="email" id="signin-email" placeholder="Enter your email" required>
+                </div>
+                <div>
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" placeholder="Enter your password" required>
+                </div>
+                <button onclick="handleSignin()">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="text-content" id="textContent">
+            <h1 id="mainHeading">DIVE INTO DEV MODE</h1>
+            <div class="paragraph-wrapper">
+                <p id="potentialText">Unlock Your Potential and Make an Impact with Your Skills!</p>
+                <p id="kickstartText">Kickstart Your Journey by Enabling Dev Mode!</p>
+                <p id="startJourneyText">Start your journey</p>
+            </div>
+            <div class="toggle-switch" id="toggleSwitch">
+                <input type="checkbox" id="dev-mode">
+                <label for="dev-mode"></label>
+                <span>Dev Mode</span>
+            </div>
+        </div>
+        <div class="dev-mode-animation" id="devModeAnimation">
+            <div class="sad-animation">
+                <div class="sad-signal"></div>
+                <div class="sad-signal"></div>
+                <div class="sad-signal"></div>
+                <div class="sad-signal"></div>
+                <div class="sad-signal"></div>
+                <div class="sad-sparkle"></div>
+                <div class="sad-sparkle"></div>
+                <div class="sad-sparkle"></div>
+            </div>
+            <div class="code-fragments">
+                <div class="code-fragment">function enableDev() {</div>
+                <div class="code-fragment">  console.log("Ready!");</div>
+                <div class="code-fragment">  return true;</div>
+                <div class="code-fragment">} // Dev Mode On</div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-to-learn" id="scrollToLearn">Scroll to Learn More</div>
+    
+    <div class="header">Explore Inspiring Online Courses</div>
+    
+    <div class="categories">
+        <button class="category-btn featured">Featured</button>
+        <button class="category-btn">Music</button>
+        <button class="category-btn">Drawing & Painting</button>
+        <button class="category-btn">Animation</button>
+        <button class="category-btn">Creative Writing</button>
+        <button class="category-btn">Marketing</button>
+        <button class="category-btn">UI/UX Design</button>
+        <button class="category-btn">Social Media</button>
+        <button class="category-btn">Productivity</button>
+        <button class="category-btn">Graphics Design</button>
+        <button class="category-btn">Freelancing & Entrepreneurship</button>
+        <button class="category-btn">Programming</button>
+    </div>
+
+    <div class="course-grid">
+        <div class="course-card">
+            <img src="./image/Rectangle 25.jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN CODING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 26.jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN WEB DESIGNING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 27.jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN UI/UX DESIGNING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 28.jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN PHOTOGRAPHY WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 25 (1).jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN CODING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 26 (1).jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN WEB DESIGNING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 27 (1).jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN UI/UX DESIGNING WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="./image/Rectangle 28 (1).jpg" alt="Course Image">
+            <div class="course-info">
+                <p class="title">10,000 STUDENTS LEARN PHOTOGRAPHY WITH ME</p>
+                <p>1h 30m</p>
+                <p class="instructor">Daniel</p>
+            </div>
+        </div>
+    </div>
+    <div class="header">Explore Our Community</div>
+    
+    <div class="container">
+        <div class="channels-section">
+            <h2>Channels</h2>
+            <div class="channel" onclick="showChat('Marketing Analysis')">
+                <img src="./image/Ellipse 12.jpg" alt="Channel Icon">
+                <span>Marketing Analysis</span>
+            </div>
+            <div class="channel" onclick="showChat('Graphics Designing')">
+                <img src="./image/Ellipse 12 (1).jpg" alt="Channel Icon">
+                <span>Graphics Designing</span>
+            </div>
+            <div class="channel" onclick="showChat('Web Development')">
+                <img src="./image/Ellipse 12 (2).jpg" alt="Channel Icon">
+                <span>Web Development</span>
+            </div>
+            <div class="channel" onclick="showChat('Web Designing')">
+                <img src="./image/Ellipse 12 (3).jpg" alt="Channel Icon">
+                <span>Web Designing</span>
+            </div>
+        </div>
+
+        <div class="chat-section" id="chatSection">
+            <div class="chat-header">
+                <div class="user-info">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="goBackToChannels()" style="cursor: pointer;">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                    <img src="./image/Ellipse 12 (4).jpg" alt="User Avatar">
+                    <span id="channelName">Chris Johnson</span>
+                </div>
+                <div class="icons">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s-8-4.5-8-10V5l8-3 8 3v7c0 5.5-8 10-8 10z"></path>
+                        <path d="M12 18v2"></path>
+                        <path d="M5 5l-2-2"></path>
+                        <path d="M19 5l2-2"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Doubts or Queries">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 2L11 13"></path>
+                    <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="background">
+        <div class="header highlighted">What Our <span class="highlight">Clients</span> Say</div>
+        <div class="container testimonials-container">
+            <div class="testimonials">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="./image/unsplash_DItYlc26zVI.jpg" alt="Client 1">
+                        <span class="role-label">Web Designer</span>
+                    </div>
+                    <p>This platform has been a game-changer for my design skills! The UI/UX courses offered practical tips and real-world projects that helped me create more engaging and user-friendly educational websites.</p>
+                    <div class="client-details">
+                        <h3>John Doe</h3>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="./image/unsplash_C8Ta0gwPbQg.jpg" alt="Client 2">
+                        <span class="role-label">Engineer</span>
+                    </div>
+                    <p>The engineering-focused courses on this platform are top-notch. I learned advanced concepts in a structured way, and the interactive simulations made complex topics like algorithms and data structures much easier to grasp.</p>
+                    <div class="client-details">
+                        <h3>Jane Smith</h3>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="./image/unsplash_ttSRjiYG_WM.jpg" alt="Client 3">
+                        <span class="role-label">Developer</span>
+                    </div>
+                    <p>As a developer, I appreciate how this platform offers in-depth coding tutorials. The step-by-step projects helped me build educational apps, and the community support was invaluable for troubleshooting issues.</p>
+                    <div class="client-details">
+                        <h3>Emily Johnson</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container1">
+        <h1>Frequently Asked Question</h1>
+        <div class="faq">
+            <div class="faq-item">
+                <div class="question" onclick="toggleAnswer('answer-1')">
+                    How do I become a teacher?
+                    <i id="arrow-1" class="fas fa-chevron-down"></i>
+                </div>
+                <div id="answer-1" class="answer">
+                    To become a teacher, you need to sign up on our platform, submit an application with your credentials, and complete our teacher training program.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="question" onclick="toggleAnswer('answer-2')">
+                    What is Dev mode?
+                    <i id="arrow-2" class="fas fa-chevron-down"></i>
+                </div>
+                <div id="answer-2" class="answer">
+                    In our Dev mode you will learn how to observe your learning process and how to get improve in such things.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="question" onclick="toggleAnswer('answer-3')">
+                    How to become a coder?
+                    <i id="arrow-3" class="fas fa-chevron-down"></i>
+                </div>
+                <div id="answer-3" class="answer">
+                    To become a coder, you'll typically need to learn programming languages, practice regularly, build projects, and potentially pursue formal education or certifications.
+                </div>
+            </div>
+        </div>
+
+        <div class="social-media">
+            <h2>FOLLOW US ON</h2>
+            <div class="icons">
+                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="youtube"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="pinterest"><i class="fab fa-pinterest"></i></a>
+                <a href="#" class="linkedin"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h3>Company</h3>
+                <a href="#">About</a>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+                <a href="#">Partnerships</a>
+            </div>
+            <div class="footer-column">
+                <h3>Community</h3>
+                <a href="#">Team Plans</a>
+            </div>
+            <div class="footer-column">
+                <h3>Teaching</h3>
+                <a href="#">Become a Teacher</a>
+                <a href="#">Teacher Help Center</a>
+                <a href="#">Teacher Rules & Requirements</a>
+            </div>
+        </div>
+        <p class="copyright">© Copyright 2025. Devmode Team.</p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script src="interactive.js"></script>
+</body>
+</html>
